@@ -1,7 +1,7 @@
 {
     "name": "url-state-sync",
     "type": "module",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Minimal URL ⇄ state sync store — framework-agnostic, zero-dependency.",
     "author": "szve",
     "license": "MIT",
