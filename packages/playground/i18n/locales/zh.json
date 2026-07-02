@@ -1,0 +1,23 @@
+{
+    "home": {
+        "title": "URL ⇄ 状态同步 store",
+        "description": "极简、类型安全的 URL ⇄ 状态同步 —— 框架无关、零依赖。",
+        "getStarted": "开始使用"
+    },
+    "demo": {
+        "title": "试一试",
+        "immediate": "立即同步",
+        "keyword": "关键词",
+        "page": "页码",
+        "tags": "标签",
+        "sync": "同步到 URL",
+        "reset": "重置"
+    },
+    "nav": {
+        "home": "首页"
+    },
+    "docs": {
+        "onThisPage": "本页目录",
+        "search": "搜索文档"
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "home": {
+        "title": "URL ⇄ state sync store",
+        "description": "Minimal, type-safe URL ⇄ state sync — framework-agnostic, zero-dependency.",
+        "getStarted": "Get started"
+    },
+    "demo": {
+        "title": "Try it",
+        "immediate": "immediate",
+        "keyword": "keyword",
+        "page": "page",
+        "tags": "tags",
+        "sync": "Sync to URL",
+        "reset": "Reset"
+    },
+    "nav": {
+        "home": "Home"
+    },
+    "docs": {
+        "onThisPage": "On this page",
+        "search": "Search docs"
+    }
+}

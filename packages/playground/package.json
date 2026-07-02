@@ -1,0 +1,30 @@
+{
+    "name": "url-state-sync-playground",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "dev": "nuxt dev",
+        "build": "nuxt generate",
+        "preview": "nuxt preview",
+        "typecheck": "nuxt typecheck",
+        "postinstall": "nuxt prepare"
+    },
+    "dependencies": {
+        "@nuxt/content": "^3.14.0",
+        "@nuxtjs/i18n": "^10.4.0",
+        "url-state-sync": "workspace:*"
+    },
+    "devDependencies": {
+        "@iconify-json/lucide": "^1.2.111",
+        "@iconify-json/simple-icons": "^1.2.0",
+        "@nuxt/ui": "^4.4.0",
+        "@types/node": "^26.0.1",
+        "@vueuse/core": "^13.0.0",
+        "@vueuse/nuxt": "^13.0.0",
+        "nuxt": "^4.3.0",
+        "nuxt-content-twoslash": "^0.4.0",
+        "typescript": "^5.9.3",
+        "vue": "^3.5.0",
+        "vue-tsc": "^3.3.4"
+    }
+}
