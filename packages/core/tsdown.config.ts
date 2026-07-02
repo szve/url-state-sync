@@ -7,6 +7,4 @@ export default defineConfig({
     clean: true,
     treeshake: true,
     platform: 'neutral',
-    publint: 'ci-only',
-    attw: 'ci-only',
 })

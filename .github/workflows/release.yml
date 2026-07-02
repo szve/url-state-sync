@@ -1,45 +1,87 @@
-name: Release
+name: release
 
-# 发布一个 GitHub Release 后触发,自动把 packages/core 发到 npm
+# uppt 流程:push main → 自动开 release PR → merge → 打 tag/建 Release
+# → 手动 workflow_dispatch(on tag) → pack 打包 → publish 发布到 npm
+# publish 目前用 NPM_TOKEN;以后切 OIDC 见 publish job 内注释
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+  pull_request:
+    types: [closed]
+    branches: [main]
+  workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
-  publish:
+  # 从 conventional commits 生成/更新 release PR(bump version + CHANGELOG)
+  pr:
+    if: github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: danielroe/uppt/pr@7bcfb5397c37202ef882363f755423130419d28a # v0.5.5
+        with:
+          packages: |
+            packages/core
 
-      - uses: pnpm/action-setup@v6
+  # release PR 合并后:打 tag + 建 GitHub Release
+  release:
+    if: |
+      github.event_name == 'pull_request'
+      && github.event.pull_request.merged == true
+      && startsWith(github.event.pull_request.head.ref, 'release/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: danielroe/uppt/release@7bcfb5397c37202ef882363f755423130419d28a # v0.5.5
+        with:
+          packages: |
+            packages/core
 
+  # 打包 tarball(手动在 tag 上触发 workflow_dispatch),上传为 artifact "uppt-tarball"
+  pack:
+    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      files: ${{ steps.pack.outputs.files }}
+    steps:
+      - id: pack
+        uses: danielroe/uppt/pack@7bcfb5397c37202ef882363f755423130419d28a # v0.5.5
+        with:
+          packages: |
+            packages/core
+
+  # 发布到 npm —— 当前用 NPM_TOKEN,下载 pack 打好的 tarball 直接发
+  publish:
+    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/tags/v')
+    needs: pack
+    runs-on: ubuntu-latest
+    # OIDC 模式需要(切换时取消注释):
+    # permissions:
+    #   id-token: write
+    # environment: npm
+    # steps:
+    #   - uses: danielroe/uppt/publish@7bcfb5397c37202ef882363f755423130419d28a # v0.5.5
+
+    # === NPM_TOKEN 模式(当前启用)===
+    steps:
       - uses: actions/setup-node@v6
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-          cache: pnpm
-
-      - name: Install
-        run: pnpm install --frozen-lockfile --config.trustPolicy=disabled
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Typecheck
-        run: pnpm --filter url-state-sync typecheck
-
-      - name: Test
-        run: pnpm --filter url-state-sync test
-
-      - name: Build
-        run: pnpm --filter url-state-sync build
-
-      # 不写包名,从 packages/core 的 package.json 读
-      - name: Publish to npm
-        working-directory: packages/core
-        run: pnpm publish --no-git-checks
+      - uses: actions/download-artifact@v4
+        with:
+          name: uppt-tarball
+      - name: Publish tarballs to npm
+        run: |
+          for tgz in ./*.tgz; do
+            npm publish "$tgz"
+          done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

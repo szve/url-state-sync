@@ -5,6 +5,7 @@ dist
 .nuxt
 .data
 .env
+.npmrc
 .idea/
 .vscode
 .DS_Store
